@@ -1,2 +1,11 @@
-# hedgehog-front-dapp
-Front dapp page for Hedgehog, a fully decentralized protocol for hedging against price changes of on-chain assets  About Smart contract for Hedgehog, a fully decentralized protocol for hedging against price changes of on-chain assets.
+# hedghog-front-dapp
+Dapp page for Hedgehog, a fully decentralized hedging protocol. For more info check the docs here.
+
+## Install dependencies
+`yarn`
+
+## Run develop
+`yarn start`
+
+## Build
+`yarn build`
