@@ -13,7 +13,7 @@ class AppFooter extends React.Component {
             <NavItem>
               <NavLink
                 className="text-light text-right"
-                href={url}
+                href="https://github.com/Banq-Development/hedgehog-contracts"
                 target="_blank"
               >
                 Github
@@ -22,7 +22,7 @@ class AppFooter extends React.Component {
             <NavItem>
               <NavLink
                 className="text-light text-right"
-                href={""}
+                href="https://docs.hedgehog.financial"
                 target="_blank"
               >
                 Docs
