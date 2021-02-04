@@ -5,7 +5,6 @@ import { Container, Nav, NavItem, NavLink,} from "reactstrap";
 
 class AppFooter extends React.Component {
   render() {
-    var url = "https://github.com/Banq-Development";
     return (
       <footer>
         <Container fluid>
