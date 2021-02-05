@@ -30,7 +30,6 @@ const WETH = require("./web3/WETH.json");
 const HedgehogFactory = require("./web3/HedgehogFactory.json");
 const Hedgehog = require("./web3/Hedgehog.json");
 const IERC20 = require("./web3/IERC20.json");
-let addressHedgehogFactory;
 
 class App extends React.Component {
   constructor(props) {    
@@ -43,6 +42,7 @@ class App extends React.Component {
     this.adjust_slip = this.adjust_slip.bind(this)
     this.state = {
       web3Available: false,
+      addressHedgehogFactory: "",
       networkID: 1,
       asset: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64",
       assetLabel: "",
@@ -179,8 +179,8 @@ class App extends React.Component {
     }
   }
   componentDidMount() {
-    this.startEth();
     if (window.ethereum) {
+      this.startEth();
       window.ethereum.on("accountsChanged", () => {
         this.startEth();
       })
@@ -218,47 +218,47 @@ class App extends React.Component {
   }
   async gethETHdata () {
       if (this.state.networkID === "0x539" ) {
-        addressHedgehogFactory = "0x6Cb749e08832edEDf77cFB34fF362e011cB1cDa3";
+        await this.setState({addressHedgehogFactory: "0x6Cb749e08832edEDf77cFB34fF362e011cB1cDa3"});
         await this.setState({asset: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64"})
       } else if (this.state.networkID === "0x03" || this.state.networkID === "0x3"){
-        addressHedgehogFactory = "0x8C98C789ACda3e5331afa582DF06d788D94c28FB";
+        await this.setState({addressHedgehogFactory: "0x8C98C789ACda3e5331afa582DF06d788D94c28FB"});
         await this.setState({asset: "0xf5E86AB8aa8dCD5AC331d3a8Cb9894Aa924b2947"})
       } else if (this.state.networkID === "0x04" || this.state.networkID === "0x4"){
-        addressHedgehogFactory = "";
+        await this.setState({addressHedgehogFactory: ""});
       } else if (this.state.networkID === "0x05" || this.state.networkID === "0x5"){
-        addressHedgehogFactory = "";
+        await this.setState({addressHedgehogFactory: ""});
       } else if (this.state.networkID === "0x2a"){
-        addressHedgehogFactory = "";
+        await this.setState({addressHedgehogFactory: ""});
       } else {
-        addressHedgehogFactory = "";
+        await this.setState({addressHedgehogFactory: ""});
       }
-    try {  
-      let factory = await new web3.eth.Contract(HedgehogFactory.abi, addressHedgehogFactory)
-      let hedgehog_address = await factory.methods.hedgehog(this.state.asset).call()
-      let hedgehog = await new web3.eth.Contract(Hedgehog.abi, hedgehog_address) 
-      let asset = await new web3.eth.Contract(IERC20.abi, this.state.asset)
-      let asset_symbol = await asset.methods.symbol().call()
-      let token_symbol = await hedgehog.methods.symbol().call()
-      await this.setState({asset_symbol: asset_symbol})
-      await this.setState({token_symbol: token_symbol})    
-      let asset_balance = await asset.methods.balanceOf(this.state.account).call()
-      let token_balance = await hedgehog.methods.balanceOf(this.state.account).call() 
-      await this.setState({asset_balance: asset_balance})
-      await this.setState({token_balance: token_balance})
-      let asset_enabled = await asset.methods.allowance(this.state.account, hedgehog_address).call()  
-      await this.setState({asset_enabled: asset_enabled})
-      let total_tokens = await hedgehog.methods.totalSupply().call()
-      await this.setState({currentTokens: total_tokens})
-      let total_assets = await asset.methods.balanceOf(hedgehog_address).call()
-      await this.setState({currentAssets: total_assets})
-      let currentPrice = await hedgehog.methods.price().call()
-      let asstprec = this.state.asset_precision;
-      await this.setState({currentPrice: currentPrice/ (10**asstprec)})
-      let balance = await web3.eth.getBalance(this.state.account)
-      await this.setState({eth_balance: balance}) 
-      this.setgraph(true, 0) 
-    } catch {
-    }
+      try {  
+        let factory = await new web3.eth.Contract(HedgehogFactory.abi, this.state.addressHedgehogFactory)
+        let hedgehog_address = await factory.methods.hedgehog(this.state.asset).call()
+        let hedgehog = await new web3.eth.Contract(Hedgehog.abi, hedgehog_address) 
+        let asset = await new web3.eth.Contract(IERC20.abi, this.state.asset)
+        let asset_symbol = await asset.methods.symbol().call()
+        let token_symbol = await hedgehog.methods.symbol().call()
+        await this.setState({asset_symbol: asset_symbol})
+        await this.setState({token_symbol: token_symbol})    
+        let asset_balance = await asset.methods.balanceOf(this.state.account).call()
+        let token_balance = await hedgehog.methods.balanceOf(this.state.account).call() 
+        await this.setState({asset_balance: asset_balance})
+        await this.setState({token_balance: token_balance})
+        let asset_enabled = await asset.methods.allowance(this.state.account, hedgehog_address).call()  
+        await this.setState({asset_enabled: asset_enabled})
+        let total_tokens = await hedgehog.methods.totalSupply().call()
+        await this.setState({currentTokens: total_tokens})
+        let total_assets = await asset.methods.balanceOf(hedgehog_address).call()
+        await this.setState({currentAssets: total_assets})
+        let currentPrice = await hedgehog.methods.price().call()
+        let asstprec = this.state.asset_precision;
+        await this.setState({currentPrice: currentPrice/ (10**asstprec)})
+        let balance = await web3.eth.getBalance(this.state.account)
+        await this.setState({eth_balance: balance}) 
+        this.setgraph(true, 0) 
+      } catch {
+      }
   }
   toggle () {
     this.setState({modal: !this.state.modal})
@@ -428,7 +428,7 @@ class App extends React.Component {
       this.setState({createnewAsset: false})
     } else {
       this.setState({assetLabel: e.target.value})
-      let factory = await new web3.eth.Contract(HedgehogFactory.abi, addressHedgehogFactory)
+      let factory = await new web3.eth.Contract(HedgehogFactory.abi, this.state.addressHedgehogFactory)
       let hedgehog_address
       try {
         hedgehog_address = await factory.methods.hedgehog(this.state.assetLabel).call()
@@ -448,7 +448,7 @@ class App extends React.Component {
     }
   }
   async sendmessage (input){
-    let factory = await new web3.eth.Contract(HedgehogFactory.abi, addressHedgehogFactory)
+    let factory = await new web3.eth.Contract(HedgehogFactory.abi, this.state.addressHedgehogFactory)
     let hedgehog_address = await factory.methods.hedgehog(this.state.asset).call()
     let hedgehog = await new web3.eth.Contract(Hedgehog.abi, hedgehog_address) 
     let asset = await new web3.eth.Contract(IERC20.abi, this.state.asset)
@@ -493,12 +493,11 @@ class App extends React.Component {
     this.setState({visible: false})
   }
   async createNew () {
-    let factory = await new web3.eth.Contract(HedgehogFactory.abi, addressHedgehogFactory) 
+    let factory = await new web3.eth.Contract(HedgehogFactory.abi, this.state.addressHedgehogFactory) 
     let newasset = this.state.assetLabel.toString()
     await factory.methods.createHedgehog(newasset).send({from: this.state.account})
   }
-  async setgraph(deposit, added) {    
-    if (window.ethereum) {await this.gethETHdata()}
+  async setgraph(deposit, added) {        
     let maxtokens = this.state.currentTokens * 4;
     let currentTokens = new BN(this.state.currentTokens);
     let newTokens = new BN(currentTokens);
