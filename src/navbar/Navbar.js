@@ -3,7 +3,8 @@ import {
   Container,
   Navbar,
   NavLink,
-  Button
+  Button,
+  Spinner
 } from "reactstrap";
 import logo from '../images/hedgehog_fat_filled_transparent_white.png';
 
@@ -13,11 +14,17 @@ class AppNavbar extends React.Component {
   }
   render() {
     let button;
+    let pending_text;
     let account = this.props.account.substring(0, 6)+"..."+this.props.account.substring(38, 42);
     if (!window.ethereum) {
       button = 
       <Button className="text-light text-right"  color="warning" type="button-link" href="https://metamask.io"> Install Metamask </Button> ;
     } else {
+      let networkname = ""
+      if (this.props.chainID === "0x03" || this.props.chainID === "0x3"){networkname = "ropsten."}
+      if (this.props.chainID === "0x04" || this.props.chainID === "0x4"){networkname = "rinkeby."}
+      if (this.props.chainID === "0x05" || this.props.chainID === "0x5"){networkname = "goerli."}
+      if (this.props.chainID === "0x2a" ){networkname = "kovan."}
       button = 
       (<>
       <div className="btn-group" role="group">
@@ -40,12 +47,25 @@ class AppNavbar extends React.Component {
         className="text-light text-right" 
         color="primary" 
         type="button-link" 
-        href={"https://etherscan.io/address/"+this.props.account.toString()}
+        href={"https://"+networkname+"etherscan.io/address/"+this.props.account.toString()}
+        target="_blank"
       > 
       {account} 
-      </Button> 
+      </Button>  
       </>
       )
+      if (this.props.texthash !== "") {
+        pending_text =
+          <Button 
+          className="text-light text-right" 
+          color="primary" 
+          type="button-link" 
+          href={"https://"+networkname+"etherscan.io/tx/"+this.props.texthash}
+          target="_blank"
+          > 
+            <Spinner size="sm" /> pending txn
+          </Button>
+      }
     }
     let alert
     if (window.ethereum) {
@@ -90,7 +110,7 @@ class AppNavbar extends React.Component {
             <span>Hedgehog</span>
           </NavLink>
           <Container className="px-4"></Container>
-          {button} 
+          {button} {pending_text}
         </Navbar>
       </div>
     );

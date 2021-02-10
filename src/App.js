@@ -69,6 +69,7 @@ class App extends React.Component {
       createnewAsset: false,
       modal: false,
       eth_balance: "",
+      txhash: "",
       chart: {
         data: canvas => {
           let maxtokens = 0;
@@ -371,7 +372,11 @@ class App extends React.Component {
     let newprice;
     let pres = new BN(10**8)
     if (this.state.carddeposit) {
-      newAssets = totalAssets.add(add.div(pres))
+      base = new BN(100)
+      let slip = (100+(parseFloat(this.state.slippage)))
+      let slipBN = new BN(slip)
+
+      newAssets = totalAssets.add(add.div(slipBN).div(pres).mul(base))
       newTokens = newAssets ** (1/2) 
       let newTokensBN = new BN(newTokens)
       changeTokens = newTokensBN.sub(totalTokens)
@@ -382,7 +387,11 @@ class App extends React.Component {
       let newasset = newtoken**2
       newprice = (newasset - newAssets) / 10**assetprec
     } else {
-      newAssets = totalAssets.sub(add.div(pres))
+      base = new BN(100)
+      let slip = (100-(parseFloat(this.state.slippage)))
+      let slipBN = new BN(slip)
+
+      newAssets = totalAssets.sub(add.div(slipBN).div(pres).mul(base))
       newTokens = newAssets ** (1/2)
       let newTokensBN = new BN(newTokens)
       changeTokens = totalTokens.sub(newTokensBN)
@@ -457,18 +466,27 @@ class App extends React.Component {
       let exp = new BN(256)
       let sub = new BN(1)
       let max = base.pow(exp).sub(sub)
-      await asset.methods.approve(hedgehog_address, max.toString()).send({from: this.state.account})
+      await asset.methods.approve(hedgehog_address, max.toString()).send({from: this.state.account}, function(error, hash){
+        this.setState({txhash: hash})
+      }.bind(this))
+      this.setState({txhash: ""})
       console.log("approve")
     } else if (input === "Deposit") {
       let tkn = new BN(this.state.amountTokens)
       let asst = new BN(this.state.amountAssets.toString())
-      await hedgehog.methods.deposit(tkn, asst).send({from: this.state.account})
+      await hedgehog.methods.deposit(tkn, asst).send({from: this.state.account}, function(error, hash){
+        this.setState({txhash: hash})
+      }.bind(this))
+      this.setState({txhash: ""})
       console.log("deposit")
       this.setgraph(true, this.state.currentTokens)
     } else if (input === "Withdraw") {
       let tkn = new BN(this.state.amountTokens)
       let asst = new BN(this.state.amountAssets.toString())
-      await hedgehog.methods.withdraw(tkn, asst).send({from: this.state.account})
+      await hedgehog.methods.withdraw(tkn, asst).send({from: this.state.account}, function(error, hash){
+        this.setState({txhash: hash})
+      }.bind(this))
+      this.setState({txhash: ""})
       console.log("withdraw")
       this.setgraph(false, this.state.currentTokens)
     }
@@ -746,7 +764,8 @@ class App extends React.Component {
           asset_symbol={this.state.asset_symbol}
           token_symbol={this.state.token_symbol}
           asset_balance={this.state.asset_balance / (10**this.state.asset_precision)}
-          token_balance ={this.state.token_balance / (10**this.state.token_precision)}
+          token_balance={this.state.token_balance / (10**this.state.token_precision)}
+          texthash={this.state.txhash}
           sendmax={this.sendmax}
         />
         {/* Page content */}
