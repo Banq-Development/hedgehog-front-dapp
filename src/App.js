@@ -278,7 +278,10 @@ class App extends React.Component {
   async convert () {
     let weth = await new web3.eth.Contract(WETH.abi, this.state.asset)
     let amount = this.state.amount_eth.toLocaleString('fullwide', {useGrouping:false})
-    await weth.methods.deposit().send({from: this.state.account, value: amount})
+    await weth.methods.deposit().send({from: this.state.account, value: amount}, function(error, hash){
+      this.setState({txhash: hash})
+    }.bind(this))
+    this.setState({txhash: ""})
     this.setState({modal: !this.state.modal})
     this.gethETHdata()
   }
@@ -513,7 +516,10 @@ class App extends React.Component {
   async createNew () {
     let factory = await new web3.eth.Contract(HedgehogFactory.abi, this.state.addressHedgehogFactory) 
     let newasset = this.state.assetLabel.toString()
-    await factory.methods.createHedgehog(newasset).send({from: this.state.account})
+    await factory.methods.createHedgehog(newasset).send({from: this.state.account}, function(error, hash){
+      this.setState({txhash: hash})
+    }.bind(this))
+    this.setState({txhash: ""})
   }
   async setgraph(deposit, added) {        
     let maxtokens = this.state.currentTokens * 4;
