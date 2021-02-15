@@ -44,7 +44,8 @@ class App extends React.Component {
       web3Available: false,
       addressHedgehogFactory: "",
       networkID: 1,
-      asset: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64",
+      weth: "",
+      asset: "",
       assetLabel: "",
       asset_enabled: "",
       account: "",
@@ -200,7 +201,7 @@ class App extends React.Component {
         let chainId = await window.ethereum.request({ method: 'eth_chainId' })
         await this.setState({networkID: chainId})
         await this.setState({web3Available: true})
-        this.gethETHdata()
+        this.initialETHdata()
       } catch(e) {console.log("No web3")} 
     }
     // Legacy DApp Browsers
@@ -210,32 +211,48 @@ class App extends React.Component {
       await window.web3.request({ method: 'eth_requestAccounts' })
       await this.setState({networkID: chainId})
       await this.setState({web3Available: true})
-      this.gethETHdata()
+      this.initialETHdata()
       }
     // Non-DApp Browsers
     else {
       console.log("No web3")
     }
   }
+  async initialETHdata () {
+    if (this.state.networkID === "0x539" ) {
+      await this.setState({addressHedgehogFactory: "0x6Cb749e08832edEDf77cFB34fF362e011cB1cDa3"})
+      await this.setState({asset: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64"})
+      await this.setState({weth: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64"})
+    } else if (this.state.networkID === "0x03" || this.state.networkID === "0x3"){
+      await this.setState({addressHedgehogFactory: "0x8C98C789ACda3e5331afa582DF06d788D94c28FB"})
+      await this.setState({asset: "0xf5E86AB8aa8dCD5AC331d3a8Cb9894Aa924b2947"})
+      await this.setState({weth: "0xf5E86AB8aa8dCD5AC331d3a8Cb9894Aa924b2947"})
+    } else if (this.state.networkID === "0x04" || this.state.networkID === "0x4"){
+      await this.setState({addressHedgehogFactory: "0xC20d30Cee8a6C03c110F4B8837560EC35034b3b0"})
+      await this.setState({asset: "0x9612ebF2955066388b8B2c8Ec54f9129a6dEC99E"})
+      await this.setState({weth: "0x9612ebF2955066388b8B2c8Ec54f9129a6dEC99E"})
+    } else if (this.state.networkID === "0x05" || this.state.networkID === "0x5"){
+      await this.setState({addressHedgehogFactory: "0x93698B94A950aa9668d9b584908C2399dfB1183d"})
+      await this.setState({asset: "0x2bBa9Ec08e2CC38670C434a94962FF71ffF7b563"})
+      await this.setState({weth: "0x2bBa9Ec08e2CC38670C434a94962FF71ffF7b563"})
+    } else if (this.state.networkID === "0x2a"){
+      await this.setState({addressHedgehogFactory: "0x3F28Aac00BfE9b9d848bf48A8994795dA9F6228B"})
+      await this.setState({asset: "0xCb7759495C888771be8F1EbbC625a44b5Ae11380"})
+      await this.setState({weth: "0xCb7759495C888771be8F1EbbC625a44b5Ae11380"})
+    } else {
+      await this.setState({addressHedgehogFactory: ""})
+      await this.setState({asset: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"})
+      await this.setState({weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"})
+    }
+    this.gethETHdata()
+  }
   async gethETHdata () {
-      if (this.state.networkID === "0x539" ) {
-        await this.setState({addressHedgehogFactory: "0x6Cb749e08832edEDf77cFB34fF362e011cB1cDa3"});
-        await this.setState({asset: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64"})
-      } else if (this.state.networkID === "0x03" || this.state.networkID === "0x3"){
-        await this.setState({addressHedgehogFactory: "0x8C98C789ACda3e5331afa582DF06d788D94c28FB"});
-        await this.setState({asset: "0xf5E86AB8aa8dCD5AC331d3a8Cb9894Aa924b2947"})
-      } else if (this.state.networkID === "0x04" || this.state.networkID === "0x4"){
-        await this.setState({addressHedgehogFactory: ""});
-      } else if (this.state.networkID === "0x05" || this.state.networkID === "0x5"){
-        await this.setState({addressHedgehogFactory: ""});
-      } else if (this.state.networkID === "0x2a"){
-        await this.setState({addressHedgehogFactory: ""});
-      } else {
-        await this.setState({addressHedgehogFactory: ""});
-      }
       try {  
         let factory = await new web3.eth.Contract(HedgehogFactory.abi, this.state.addressHedgehogFactory)
         let hedgehog_address = await factory.methods.hedgehog(this.state.asset).call()
+        
+        console.log("hedgehog address: "+hedgehog_address)
+        
         let hedgehog = await new web3.eth.Contract(Hedgehog.abi, hedgehog_address) 
         let asset = await new web3.eth.Contract(IERC20.abi, this.state.asset)
         let asset_symbol = await asset.methods.symbol().call()
@@ -520,6 +537,8 @@ class App extends React.Component {
       this.setState({txhash: hash})
     }.bind(this))
     this.setState({txhash: ""})
+    this.gethETHdata()
+    this.setState({createnewAsset: false})
   }
   async setgraph(deposit, added) {        
     let maxtokens = this.state.currentTokens * 4;
@@ -690,7 +709,7 @@ class App extends React.Component {
     if (this.state.visible === true) {
       warning = <CardBody >
                   <div className="alert alert-primary">
-                    Hedgehog is in <b>beta</b>, please use at your own risk
+                    Hedgehog is in <b>beta</b> and <b>unaudited</b>, please use at your own risk
                     <button type="button" className="close" onClick={() => this.Dismiss()}>
                       <span className="text-dark-blue" aria-hidden="true">&times;</span>
                     </button>
@@ -701,14 +720,14 @@ class App extends React.Component {
     }
     let button_createnewAsset
     if (this.state.createnewAsset === true) {
-      button_createnewAsset=    <Col lg="2" md="4">
-                                  <InputGroup className="input-group-alternative mb-3">
+      button_createnewAsset=    <Col lg="2" md="1">
+                                  <InputGroup className="input-group-alternative justify-content-center mb-3">
                                     <Button className="btn text-white" color="primary" onClick={() => this.createNew()}>Create asset</Button>
                                   </InputGroup> 
                                 </Col>
     }
     let convert_button
-    if (this.state.eth_balance > 0) {
+    if (this.state.weth === this.state.asset) {
       convert_button =  <div>
                         <Col lg="3" md="3">
                         <button 
@@ -777,7 +796,7 @@ class App extends React.Component {
         {/* Page content */}
         <Container className="py-7 py-lg-8">
           <Row className="justify-content-center"> 
-            {convert_button}
+            {convert_button} {button_createnewAsset}
             <Col lg="8" md="12">
               <InputGroup className="input-group-alternative mb-3">
                   <span className="input-group-text bg-primary text-white">Asset address</span>
@@ -790,7 +809,6 @@ class App extends React.Component {
                   /> 
               </InputGroup> 
             </Col>
-            {button_createnewAsset}
             <Col lg="5" md="12">
               <Card className="bg-secondary shadow border-0 mb-3">
                 <CardHeader className="bg-transparent pb-3">
