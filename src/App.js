@@ -249,10 +249,7 @@ class App extends React.Component {
   async gethETHdata () {
       try {  
         let factory = await new web3.eth.Contract(HedgehogFactory.abi, this.state.addressHedgehogFactory)
-        let hedgehog_address = await factory.methods.hedgehog(this.state.asset).call()
-        
-        console.log("hedgehog address: "+hedgehog_address)
-        
+        let hedgehog_address = await factory.methods.hedgehog(this.state.asset).call()        
         let hedgehog = await new web3.eth.Contract(Hedgehog.abi, hedgehog_address) 
         let asset = await new web3.eth.Contract(IERC20.abi, this.state.asset)
         let asset_symbol = await asset.methods.symbol().call()
