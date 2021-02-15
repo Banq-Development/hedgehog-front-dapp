@@ -30,7 +30,6 @@ const WETH = require("./web3/WETH.json");
 const HedgehogFactory = require("./web3/HedgehogFactory.json");
 const Hedgehog = require("./web3/Hedgehog.json");
 const IERC20 = require("./web3/IERC20.json");
-
 class App extends React.Component {
   constructor(props) {    
     super(props)
@@ -181,15 +180,17 @@ class App extends React.Component {
     }
   }
   componentDidMount() {
-    if (window.ethereum) {
-      this.startEth();
-      window.ethereum.on("accountsChanged", () => {
-        this.startEth();
-      })
-      window.ethereum.on("chainChanged", () => {
-        this.startEth();
-      })
-    }
+    this.startEth();
+    try{
+      if (window.ethereum) {
+        window.ethereum.on("accountsChanged", () => {
+          this.startEth();
+        })
+        window.ethereum.on("chainChanged", () => {
+          this.startEth();
+        })
+      }
+    } catch(e) {console.log("no window.ethereum")}
   }
   async startEth () {
     if (window.ethereum) {
@@ -202,7 +203,18 @@ class App extends React.Component {
         await this.setState({networkID: chainId})
         await this.setState({web3Available: true})
         this.initialETHdata()
-      } catch(e) {console.log("No web3")} 
+      } catch(e) {
+        try {
+          let accounts = await web3.eth.getAccounts()
+          this.setState({ account: accounts[0] })
+          let chainId = await web3.eth.getChainId()
+          await this.setState({networkID: chainId})
+          await this.setState({web3Available: true})
+          this.initialETHdata()
+        } catch (e) {
+          console.log("No web3 injected")
+        } 
+      } 
     }
     // Legacy DApp Browsers
     else if (window.web3) {
@@ -223,19 +235,19 @@ class App extends React.Component {
       await this.setState({addressHedgehogFactory: "0x6Cb749e08832edEDf77cFB34fF362e011cB1cDa3"})
       await this.setState({asset: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64"})
       await this.setState({weth: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64"})
-    } else if (this.state.networkID === "0x03" || this.state.networkID === "0x3"){
+    } else if (this.state.networkID === "0x03" || this.state.networkID === "0x3" || this.state.networkID === "3" || this.state.networkID === 3){
       await this.setState({addressHedgehogFactory: "0x8C98C789ACda3e5331afa582DF06d788D94c28FB"})
       await this.setState({asset: "0xf5E86AB8aa8dCD5AC331d3a8Cb9894Aa924b2947"})
       await this.setState({weth: "0xf5E86AB8aa8dCD5AC331d3a8Cb9894Aa924b2947"})
-    } else if (this.state.networkID === "0x04" || this.state.networkID === "0x4"){
+    } else if (this.state.networkID === "0x04" || this.state.networkID === "0x4" || this.state.networkID === "4" || this.state.networkID === 4){
       await this.setState({addressHedgehogFactory: "0xC20d30Cee8a6C03c110F4B8837560EC35034b3b0"})
       await this.setState({asset: "0x9612ebF2955066388b8B2c8Ec54f9129a6dEC99E"})
       await this.setState({weth: "0x9612ebF2955066388b8B2c8Ec54f9129a6dEC99E"})
-    } else if (this.state.networkID === "0x05" || this.state.networkID === "0x5"){
+    } else if (this.state.networkID === "0x05" || this.state.networkID === "0x5" || this.state.networkID === "5" || this.state.networkID === 5){
       await this.setState({addressHedgehogFactory: "0x93698B94A950aa9668d9b584908C2399dfB1183d"})
       await this.setState({asset: "0x2bBa9Ec08e2CC38670C434a94962FF71ffF7b563"})
       await this.setState({weth: "0x2bBa9Ec08e2CC38670C434a94962FF71ffF7b563"})
-    } else if (this.state.networkID === "0x2a"){
+    } else if (this.state.networkID === "0x2a" || this.state.networkID === "42" || this.state.networkID === 42){
       await this.setState({addressHedgehogFactory: "0x3F28Aac00BfE9b9d848bf48A8994795dA9F6228B"})
       await this.setState({asset: "0xCb7759495C888771be8F1EbbC625a44b5Ae11380"})
       await this.setState({weth: "0xCb7759495C888771be8F1EbbC625a44b5Ae11380"})

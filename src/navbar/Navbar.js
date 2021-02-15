@@ -21,10 +21,10 @@ class AppNavbar extends React.Component {
       <Button className="text-light text-right"  color="warning" type="button-link" href="https://metamask.io"> Install Metamask </Button> ;
     } else {
       let networkname = ""
-      if (this.props.chainID === "0x03" || this.props.chainID === "0x3"){networkname = "ropsten."}
-      if (this.props.chainID === "0x04" || this.props.chainID === "0x4"){networkname = "rinkeby."}
-      if (this.props.chainID === "0x05" || this.props.chainID === "0x5"){networkname = "goerli."}
-      if (this.props.chainID === "0x2a" ){networkname = "kovan."}
+      if (this.props.chainID === "0x03" || this.props.chainID === "0x3" || this.props.chainID === "3" || this.props.chainID === 3){networkname = "ropsten."}
+      if (this.props.chainID === "0x04" || this.props.chainID === "0x4" || this.props.chainID === "4" || this.props.chainID === 4){networkname = "rinkeby."}
+      if (this.props.chainID === "0x05" || this.props.chainID === "0x5" || this.props.chainID === "5" || this.props.chainID === 5){networkname = "goerli."}
+      if (this.props.chainID === "0x2a" || this.props.chainID === "42" || this.props.chainID === 42){networkname = "kovan."}
       button = 
       (<>
       <div className="btn-group" role="group">
@@ -73,25 +73,26 @@ class AppNavbar extends React.Component {
         alert = <div className="alert alert-warning text-center">
                   <b>GANACHE</b> private test network
                 </div>
-      } else if (this.props.chainID === "0x03" || this.props.chainID === "0x3"){
+      } else if (this.props.chainID === "0x03" || this.props.chainID === "0x3" || this.props.chainID === "3" || this.props.chainID === 3){
         alert = <div className="alert alert-warning text-center">
                   <b>Ropsten</b> network
                 </div>
-      } else if (this.props.chainID === "0x04" || this.props.chainID === "0x4"){
+      } else if (this.props.chainID === "0x04" || this.props.chainID === "0x4" || this.props.chainID === "4" || this.props.chainID === 4){
         alert = <div className="alert alert-warning text-center">
                   <b>Rinkeby</b> network
                 </div>
-      } else if (this.props.chainID === "0x05" || this.props.chainID === "0x5"){
+      } else if (this.props.chainID === "0x05" || this.props.chainID === "0x5" || this.props.chainID === "5" || this.props.chainID === 5){
         alert = <div className="alert alert-warning text-center">
                   <b>Goerli</b> network
                 </div>
-      } else if (this.props.chainID === "0x2a"){
+      } else if (this.props.chainID === "0x2a" || this.props.chainID === 42){
         alert = <div className="alert alert-warning text-center">
                   <b>Kovan</b> network
                 </div>
       } else if (this.props.chainID !== "0x01" 
                   && this.props.chainID !== "0x1"
-                  && this.props.chainID !== 1
+                  && this.props.chainID !== "1"
+                  && this.props.chainID !== 1 
                 ) {
         alert = <div className="alert alert-danger text-center">
                   Unsupported network, please connect to <b>Ethereum</b>
