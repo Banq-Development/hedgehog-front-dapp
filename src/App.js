@@ -252,7 +252,7 @@ class App extends React.Component {
       await this.setState({asset: "0xCb7759495C888771be8F1EbbC625a44b5Ae11380"})
       await this.setState({weth: "0xCb7759495C888771be8F1EbbC625a44b5Ae11380"})
     } else {
-      await this.setState({addressHedgehogFactory: ""})
+      await this.setState({addressHedgehogFactory: "0x0D266eCaA06C555028Bb975C52D71002CAD30EbA"})
       await this.setState({asset: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"})
       await this.setState({weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"})
     }
